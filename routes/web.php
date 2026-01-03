@@ -7,6 +7,8 @@ use App\Http\Controllers\ProizvodController;
 use App\Http\Controllers\ProizvodniProcesController;
 use App\Http\Controllers\VrstaCokoladeController;
 use App\Http\Controllers\NarudzbinaController;
+use App\Http\Controllers\AuthController;
+
 
 // Public rute
 Route::get('/', function () {
@@ -39,3 +41,17 @@ Route::resource('sirovine', SirovinaController::class);
 Route::resource('proizvodni-procesi', ProizvodniProcesController::class);
 Route::resource('vrste-cokolade', VrstaCokoladeController::class);
 Route::resource('narudzbine', NarudzbinaController::class);
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::resource('proizvodni-procesi', ProizvodniProcesController::class)
+        ->except(['index', 'show']); // admin pristupa samo create, store, edit, update, destroy
+});
+
+
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

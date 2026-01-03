@@ -13,7 +13,8 @@ class DatabaseSeeder extends Seeder
             ProizvodSeeder::class,
             SirovinaSeeder::class,
             ProizvodniProcesSeeder::class,
-            NarudzbinaSeeder::class,  
+            NarudzbinaSeeder::class,
+            AdminUserSeeder::class, 
         ]);
     }
 }

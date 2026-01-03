@@ -10,9 +10,14 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="mb-0">Proizvodni procesi</h3>
 
-                <a href="{{ route('proizvodni-procesi.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-1"></i> Novi proces
-                </a>
+                {{-- Dugme vidi samo ADMIN --}}
+                @auth
+                    @if(auth()->user()->role === 'admin')
+                        <a href="{{ route('proizvodni-procesi.create') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i> Novi proces
+                        </a>
+                    @endif
+                @endauth
             </div>
 
             <div class="card-body">
@@ -30,12 +35,18 @@
                                 <th>#</th>
                                 <th>Broj serije</th>
                                 <th>Proizvod</th>
-                                <th>Vrsta cokolade</th>
-                                <th>Datum pocetka</th>
-                                <th>Datum zavrsetka</th>
-                                <th>Kolicina</th>
+                                <th>Vrsta čokolade</th>
+                                <th>Datum početka</th>
+                                <th>Datum završetka</th>
+                                <th>Količina</th>
                                 <th>Status</th>
-                                <th>Akcije</th>
+
+                                {{-- Kolona akcije samo za admina --}}
+                                @auth
+                                    @if(auth()->user()->role === 'admin')
+                                        <th>Akcije</th>
+                                    @endif
+                                @endauth
                             </tr>
                         </thead>
 
@@ -43,16 +54,10 @@
                             @forelse($procesi as $proces)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-
-                                    <td class="fw-bold">
-                                        {{ $proces->broj_serije }}
-                                    </td>
-
+                                    <td class="fw-bold">{{ $proces->broj_serije }}</td>
                                     <td>{{ $proces->proizvod->naziv ?? 'N/A' }}</td>
                                     <td>{{ $proces->vrstaCokolade->naziv ?? 'N/A' }}</td>
-
                                     <td>{{ $proces->datum_pocetka->format('d.m.Y.') }}</td>
-
                                     <td>
                                         @if($proces->datum_zavrsetka)
                                             {{ $proces->datum_zavrsetka->format('d.m.Y.') }}
@@ -60,48 +65,43 @@
                                             <span class="text-muted">-</span>
                                         @endif
                                     </td>
-
                                     <td>{{ $proces->kolicina_proizvedena }} kom</td>
-
                                     <td>
                                         @if($proces->status === 'zavrseno')
-                                            <span class="badge-status badge-available">Zavrseno</span>
+                                            <span class="badge bg-success">Završeno</span>
                                         @elseif($proces->status === 'u_toku')
-                                            <span class="badge-status badge-out">U toku</span>
+                                            <span class="badge bg-warning text-dark">U toku</span>
                                         @else
-                                            <span class="badge-status badge-available">Planirano</span>
+                                            <span class="badge bg-secondary">Planirano</span>
                                         @endif
                                     </td>
 
-                                    <td>
-                                        <a href="{{ route('proizvodni-procesi.show', $proces->id) }}"
-                                           class="btn btn-sm btn-outline-primary">
-                                            Detalji
-                                        </a>
+                                    {{-- Akcije samo za admina --}}
+                                    @auth
+                                        @if(auth()->user()->role === 'admin')
+                                            <td>
+                                                <a href="{{ route('proizvodni-procesi.show', $proces->id) }}" class="btn btn-sm btn-outline-primary">
+                                                    Detalji
+                                                </a>
 
-                                        <a href="{{ route('proizvodni-procesi.edit', $proces->id) }}"
-                                           class="btn btn-sm btn-outline-warning">
-                                            Izmeni
-                                        </a>
+                                                <a href="{{ route('proizvodni-procesi.edit', $proces->id) }}" class="btn btn-sm btn-outline-warning">
+                                                    Izmeni
+                                                </a>
 
-                                        <form action="{{ route('proizvodni-procesi.destroy', $proces->id) }}"
-                                              method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('Da li ste sigurni?')">
-                                                Obrisi
-                                            </button>
-                                        </form>
-                                    </td>
+                                                <form action="{{ route('proizvodni-procesi.destroy', $proces->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Da li ste sigurni?')">
+                                                        Obriši
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        @endif
+                                    @endauth
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center text-muted">
-                                        Nema proizvodnih procesa.
-                                    </td>
+                                    <td colspan="9" class="text-center text-muted">Nema proizvodnih procesa.</td>
                                 </tr>
                             @endforelse
                         </tbody>
