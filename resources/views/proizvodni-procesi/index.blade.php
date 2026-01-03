@@ -13,7 +13,7 @@
                 {{-- Dugme vidi samo ADMIN --}}
                 @auth
                     @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('proizvodni-procesi.create') }}" class="btn btn-primary">
+                        <a href="{{ route('admin.proizvodni-procesi.create') }}" class="btn btn-primary">
                             <i class="fas fa-plus me-1"></i> Novi proces
                         </a>
                     @endif
@@ -54,22 +54,35 @@
                             @forelse($procesi as $proces)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td class="fw-bold">{{ $proces->broj_serije }}</td>
-                                    <td>{{ $proces->proizvod->naziv ?? 'N/A' }}</td>
-                                    <td>{{ $proces->vrstaCokolade->naziv ?? 'N/A' }}</td>
-                                    <td>{{ $proces->datum_pocetka->format('d.m.Y.') }}</td>
+                                    <td class="fw-bold">{{ $proces->broj_serije ?? 'SER-' . $proces['id'] }}</td>
+                                    <td>{{ $proces->proizvod->naziv ?? ($proces['naziv'] ?? 'N/A') }}</td>
+                                    <td>{{ $proces->vrstaCokolade->naziv ?? ($proces['vrsta'] ?? 'N/A') }}</td>
                                     <td>
-                                        @if($proces->datum_zavrsetka)
+                                        @if(isset($proces->datum_pocetka))
+                                            {{ $proces->datum_pocetka->format('d.m.Y.') }}
+                                        @elseif(isset($proces['datum']))
+                                            {{ date('d.m.Y.', strtotime($proces['datum'])) }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if(isset($proces->datum_zavrsetka))
                                             {{ $proces->datum_zavrsetka->format('d.m.Y.') }}
+                                        @elseif(isset($proces['datum_zavrsetka']))
+                                            {{ date('d.m.Y.', strtotime($proces['datum_zavrsetka'])) }}
                                         @else
                                             <span class="text-muted">-</span>
                                         @endif
                                     </td>
-                                    <td>{{ $proces->kolicina_proizvedena }} kom</td>
+                                    <td>{{ $proces->kolicina_proizvedena ?? ($proces['kolicina'] ?? 0) }} kom</td>
                                     <td>
-                                        @if($proces->status === 'zavrseno')
+                                        @php
+                                            $status = $proces->status ?? $proces['status'] ?? 'planirano';
+                                        @endphp
+                                        @if($status === 'zavrseno' || $status === 'završeno')
                                             <span class="badge bg-success">Završeno</span>
-                                        @elseif($proces->status === 'u_toku')
+                                        @elseif($status === 'u_toku' || $status === 'u toku')
                                             <span class="badge bg-warning text-dark">U toku</span>
                                         @else
                                             <span class="badge bg-secondary">Planirano</span>
@@ -80,15 +93,15 @@
                                     @auth
                                         @if(auth()->user()->role === 'admin')
                                             <td>
-                                                <a href="{{ route('proizvodni-procesi.show', $proces->id) }}" class="btn btn-sm btn-outline-primary">
+                                                <a href="{{ route('admin.proizvodni-procesi.show', $proces->id ?? $proces['id']) }}" class="btn btn-sm btn-outline-primary">
                                                     Detalji
                                                 </a>
 
-                                                <a href="{{ route('proizvodni-procesi.edit', $proces->id) }}" class="btn btn-sm btn-outline-warning">
+                                                <a href="{{ route('admin.proizvodni-procesi.edit', $proces->id ?? $proces['id']) }}" class="btn btn-sm btn-outline-warning">
                                                     Izmeni
                                                 </a>
 
-                                                <form action="{{ route('proizvodni-procesi.destroy', $proces->id) }}" method="POST" class="d-inline">
+                                                <form action="{{ route('admin.proizvodni-procesi.destroy', $proces->id ?? $proces['id']) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Da li ste sigurni?')">
@@ -108,7 +121,8 @@
                     </table>
                 </div>
 
-                @if($procesi->hasPages())
+                {{-- Paginacija - samo ako postoji i ako je to Eloquent kolekcija --}}
+                @if(isset($procesi) && method_exists($procesi, 'hasPages') && $procesi->hasPages())
                     <div class="d-flex justify-content-center mt-4">
                         {{ $procesi->links() }}
                     </div>
