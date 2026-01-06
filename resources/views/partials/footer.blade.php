@@ -15,7 +15,7 @@
             <div class="col-md-4 mb-4">
                 <h6 class="mb-3">Kontakt informacije</h6>
                 <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Golubcka ulica 15, Beograd</p>
-                <p class="mb-2"><i class="fas fa-phone me-2"></i> +381 11 234 567</p>
+                <p class="mb-2"><i class="fas fa-phone me-2"></i> +381 66 5595117</p>
                 <p class="mb-2"><i class="fas fa-envelope me-2"></i> amaksimovic3822it@raf.rs</p>
                 <p class="mb-0"><i class="fas fa-clock me-2"></i> Radno vreme: 08:00 - 16:00</p>
             </div>
@@ -24,9 +24,7 @@
                 <h6 class="mb-3">Brzi linkovi</h6>
                 <ul class="list-unstyled">
                     <li class="mb-2"><a href="/naruci" class="text-white text-decoration-none">Narucivanje proizvoda</a></li>
-                    <li class="mb-2"><a href="/sirovine/stanje" class="text-white text-decoration-none">Stanje sirovina</a></li>
                     <li class="mb-2"><a href="/proizvodni-procesi" class="text-white text-decoration-none">Proizvodni procesi</a></li>
-                    <li><a href="/proizvodi" class="text-white text-decoration-none">Admin panel</a></li>
                 </ul>
             </div>
         </div>
@@ -38,7 +36,7 @@
                 <p class="mb-0 copyright">&copy; {{ date('Y') }} Chocolate Factory. Sva prava zadrzana.</p>
             </div>
             <div class="col-md-6 text-center text-md-end">
-                <p class="mb-0">Projekat za predmet Uvod u softversko inzenjerstvo - ETF Beograd</p>
+                <p class="mb-0">Projekat za predmet Uvod u softversko inzenjerstvo</p>
             </div>
         </div>
     </div>

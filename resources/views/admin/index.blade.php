@@ -5,7 +5,8 @@
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-12">
+
             <!-- Header -->
             <div class="text-center mb-5">
                 <h1 class="display-4 text-primary mb-3">
@@ -98,50 +99,70 @@
                 </div>
             </div>
 
-            <!-- Quick Links -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0">
-                                <i class="fas fa-bolt me-2"></i>
-                                Brzi linkovi
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-3 col-6">
-                                    <a href="{{ route('admin.proizvodni-procesi.index') }}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                                        <i class="fas fa-industry fa-2x mb-2"></i>
-                                        <span>Proizvodni procesi</span>
-                                    </a>
-                                </div>
-                                <div class="col-md-3 col-6">
-                                    <a href="{{ route('admin.proizvodi.index') }}" class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                                        <i class="fas fa-box fa-2x mb-2"></i>
-                                        <span>Proizvodi</span>
-                                    </a>
-                                </div>
-                                <div class="col-md-3 col-6">
-                                    <a href="{{ route('admin.sirovine.index') }}" class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                                        <i class="fas fa-boxes fa-2x mb-2"></i>
-                                        <span>Sirovine</span>
-                                    </a>
-                                </div>
-                                <div class="col-md-3 col-6">
-                                    <a href="{{ route('admin.vrste-cokolade.index') }}" class="btn btn-outline-danger w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                                        <i class="fas fa-cookie-bite fa-2x mb-2"></i>
-                                        <span>Vrste čokolade</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+            <!-- Stanje sirovina -->
+            <div class="card mb-5">
+                <div class="card-header bg-light">
+                    <h4 class="mb-0"><i class="fas fa-boxes me-2"></i>Stanje sirovina</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Naziv sirovine</th>
+                                    <th>Količina na stanju</th>
+                                    <th>Jedinica mere</th>
+                                    <th>Minimalna količina</th>
+                                    <th>Cena po jedinici</th>
+                                    <th>Status</th>
+                                    <th>Vrednost zaliha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php $totalVrednost = 0; @endphp
+                                @foreach(\App\Models\Sirovina::all() as $sirovina)
+                                    @php
+                                        $vrednost = $sirovina->kolicina_na_stanju * $sirovina->cena_po_jedinici;
+                                        $totalVrednost += $vrednost;
+                                        $isLow = $sirovina->kolicina_na_stanju < $sirovina->min_kolicina;
+
+                                        if ($sirovina->status === 'dostupno') {
+                                            $statusClass = 'badge bg-success';
+                                            $statusText = 'Dostupno';
+                                        } elseif ($sirovina->status === 'nedostupno') {
+                                            $statusClass = 'badge bg-secondary';
+                                            $statusText = 'Nedostupno';
+                                        } else {
+                                            $statusClass = 'badge bg-danger';
+                                            $statusText = 'Kritično';
+                                        }
+                                    @endphp
+                                    <tr class="{{ $isLow ? 'table-warning' : '' }}">
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $sirovina->naziv }} @if($isLow) <span class="badge bg-danger ms-2">Nisko</span> @endif</td>
+                                        <td>{{ number_format($sirovina->kolicina_na_stanju,2) }}</td>
+                                        <td>{{ $sirovina->jedinica_mere }}</td>
+                                        <td>{{ number_format($sirovina->min_kolicina,2) }}</td>
+                                        <td>{{ number_format($sirovina->cena_po_jedinici,2) }} RSD</td>
+                                        <td><span class="{{ $statusClass }}">{{ $statusText }}</span></td>
+                                        <td>{{ number_format($vrednost,2) }} RSD</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-secondary">
+                                    <td colspan="7" class="text-end fw-bold">Ukupna vrednost zaliha:</td>
+                                    <td class="fw-bold">{{ number_format($totalVrednost,2) }} RSD</td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
             </div>
 
             <!-- Recent Activity -->
-            <div class="row mt-5">
+            <div class="row">
                 <div class="col-12">
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-light">
@@ -164,16 +185,16 @@
                                     <div class="d-flex w-100 justify-content-between">
                                         <div>
                                             <i class="fas fa-industry text-primary me-2"></i>
-                                            <strong>Serija #{{ $proces->broj_serije }}</strong> - {{ $proces->proizvod->naziv ?? 'N/A' }}
+                                            <strong>Serija #{{ $proces->broj_serije ?? $proces->serijski_broj }}</strong> - {{ $proces->proizvod->naziv ?? 'N/A' }}
                                         </div>
                                         <small class="text-muted">{{ $proces->created_at->diffForHumans() }}</small>
                                     </div>
                                     <div class="mt-2">
                                         <span class="badge 
-                                            @if($proces->status == 'zavrseno') bg-success
+                                            @if($proces->status == 'zavrsen') bg-success
                                             @elseif($proces->status == 'u_toku') bg-warning text-dark
                                             @else bg-secondary @endif">
-                                            {{ ucfirst(str_replace('_', ' ', $proces->status)) }}
+                                            {{ ucfirst(str_replace('_',' ',$proces->status)) }}
                                         </span>
                                         <span class="text-muted ms-3">
                                             <i class="fas fa-calendar-alt me-1"></i>
@@ -192,7 +213,7 @@
                 </div>
             </div>
 
-            <!-- Admin Actions - IZMENJENO: samo "Novi proizvodni proces" dugme -->
+            <!-- Admin Actions -->
             <div class="row mt-4">
                 <div class="col-12">
                     <div class="d-flex justify-content-center">
@@ -202,46 +223,14 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
 
 <style>
-    .card {
-        border-radius: 10px;
-        transition: transform 0.2s;
-    }
-    
-    .card:hover {
-        transform: translateY(-3px);
-    }
-    
-    .list-group-item:hover {
-        background-color: #f8f9fa;
-    }
-    
-    .btn-outline-primary, .btn-outline-success, .btn-outline-warning, .btn-outline-danger {
-        transition: all 0.3s;
-    }
-    
-    .btn-outline-primary:hover {
-        background-color: #0d6efd;
-        color: white;
-    }
-    
-    .btn-outline-success:hover {
-        background-color: #198754;
-        color: white;
-    }
-    
-    .btn-outline-warning:hover {
-        background-color: #ffc107;
-        color: black;
-    }
-    
-    .btn-outline-danger:hover {
-        background-color: #dc3545;
-        color: white;
-    }
+    .card { border-radius: 10px; transition: transform 0.2s; }
+    .card:hover { transform: translateY(-3px); }
+    .list-group-item:hover { background-color: #f8f9fa; }
 </style>
 @endsection

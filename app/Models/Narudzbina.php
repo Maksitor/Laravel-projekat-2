@@ -9,6 +9,8 @@ class Narudzbina extends Model
 {
     use HasFactory;
 
+    protected $table = 'narudzbinas';
+
     protected $fillable = [
         'ime_kupca',
         'email',
@@ -16,14 +18,13 @@ class Narudzbina extends Model
         'adresa',
         'napomena',
         'broj_narudzbine',
-        'proizvod_id',
-        'kolicina',
         'ukupna_cena',
-        'status'
+        'proizvod_id',   // OBAVEZNO dodati
+        'kolicina'       // OBAVEZNO dodati
     ];
 
     public function proizvod()
     {
-        return $this->belongsTo(Proizvod::class);
+        return $this->belongsTo(Proizvod::class, 'proizvod_id');
     }
 }

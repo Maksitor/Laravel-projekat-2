@@ -24,11 +24,6 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('sirovine/stanje') ? 'active' : '' }}" href="{{ route('sirovine.stanje') }}">
-                        <i class="fas fa-chart-bar me-1"></i> Stanje sirovina
-                    </a>
-                </li>
-                <li class="nav-item">
                     @if(auth()->check() && auth()->user()->role === 'admin')
                         <a class="nav-link {{ request()->is('admin/proizvodni-procesi*') ? 'active' : '' }}" 
                            href="{{ route('admin.proizvodni-procesi.index') }}">

@@ -8,13 +8,20 @@ use App\Http\Controllers\ProizvodniProcesController;
 use App\Http\Controllers\VrstaCokoladeController;
 use App\Http\Controllers\NarudzbinaController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProizvodPublicController;
+use App\Models\Proizvod;
 
 // ------------------- JAVNE RUTE -------------------
 
-// Početna stranica
+// Početna stranica sa listom proizvoda
 Route::get('/', function () {
-    return view('welcome');
+    // Dohvati sve proizvode sa statusom 'active'
+    $proizvodi = Proizvod::where('status', 'active')->get();
+    return view('welcome', compact('proizvodi'));
 });
+
+// Detaljan prikaz proizvoda (javna ruta)
+Route::get('/proizvodi/{id}', [ProizvodPublicController::class, 'show'])->name('proizvodi.show');
 
 // USE CASE 1: Naručivanje proizvoda
 Route::get('/naruci', [NaruciController::class, 'create'])->name('naruci.create');
@@ -60,4 +67,3 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('vrste-cokolade', VrstaCokoladeController::class);
     Route::resource('narudzbine', NarudzbinaController::class);
 });
-

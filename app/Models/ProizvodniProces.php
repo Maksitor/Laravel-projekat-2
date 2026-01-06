@@ -9,17 +9,18 @@ class ProizvodniProces extends Model
 {
     use HasFactory;
 
-    protected $table = 'proizvodni_proces'; // Tvoja tabela
+    protected $table = 'proizvodni_proces'; // tabela u bazi
 
     protected $fillable = [
-        'serijski_broj',
+        'broj_serije',        
         'proizvod_id',
-        'vrsta_cokolade_id', // OBAVEZNO dodati ovde
+        'vrsta_cokolade_id',
         'kolicina_proizvoda',
         'datum_pocetka',
         'datum_zavrsetka',
         'status',
         'napomena',
+        'ukupna_cena',
     ];
 
     // Relacija ka proizvodu

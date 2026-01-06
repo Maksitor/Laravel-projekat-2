@@ -22,6 +22,7 @@
 
             <div class="card-body">
 
+                {{-- Povratna poruka --}}
                 @if(session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
@@ -76,12 +77,15 @@
                                         @php
                                             $status = $proces->status;
                                         @endphp
-                                        @if($status === 'zavrseno' || $status === 'završeno')
+
+                                        @if($status === 'zavrsen' || $status === 'završeno')
                                             <span class="badge bg-success">Završeno</span>
                                         @elseif($status === 'u_toku' || $status === 'u toku')
                                             <span class="badge bg-warning text-dark">U toku</span>
-                                        @else
+                                        @elseif($status === 'planiran' || $status === 'planirano')
                                             <span class="badge bg-secondary">Planirano</span>
+                                        @else
+                                            <span class="badge bg-dark">Nepoznato</span>
                                         @endif
                                     </td>
 
@@ -89,21 +93,23 @@
                                     @auth
                                         @if(auth()->user()->role === 'admin')
                                             <td>
-                                                <a href="{{ route('admin.proizvodni-procesi.show', $proces->id) }}" class="btn btn-sm btn-outline-primary">
-                                                    Detalji
-                                                </a>
+                                                <div class="d-flex flex-column gap-2">
+                                                    <a href="{{ route('admin.proizvodni-procesi.show', $proces->id) }}" class="btn btn-sm btn-outline-primary">
+                                                        Detalji
+                                                    </a>
 
-                                                <a href="{{ route('admin.proizvodni-procesi.edit', $proces->id) }}" class="btn btn-sm btn-outline-warning">
-                                                    Izmeni
-                                                </a>
+                                                    <a href="{{ route('admin.proizvodni-procesi.edit', $proces->id) }}" class="btn btn-sm btn-outline-warning">
+                                                        Izmeni
+                                                    </a>
 
-                                                <form action="{{ route('admin.proizvodni-procesi.destroy', $proces->id) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Da li ste sigurni?')">
-                                                        Obriši
-                                                    </button>
-                                                </form>
+                                                    <form action="{{ route('admin.proizvodni-procesi.destroy', $proces->id) }}" method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Da li ste sigurni?')">
+                                                            Obriši
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         @endif
                                     @endauth

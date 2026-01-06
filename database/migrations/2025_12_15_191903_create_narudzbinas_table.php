@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('narudzbinas', function (Blueprint $table) {
@@ -18,15 +15,18 @@ return new class extends Migration
             $table->string('email', 100);
             $table->text('adresa');
             $table->string('telefon', 20);
+            $table->unsignedBigInteger('proizvod_id'); // NOVO: FK ka proizvods
+            $table->integer('kolicina')->default(1);   // NOVO: kolicina proizvoda
+            $table->text('napomena')->nullable();      // NOVO: napomena
             $table->decimal('ukupna_cena', 10, 2)->default(0.00);
-            $table->enum('status', ["kreirana","potvrdjena","u_obradi","poslata","dostavljena"])->default('kreirana');
+            $table->enum('status', ["kreirana","potvrdjena","u_obradi","poslata","dostavljena"])
+                  ->default('kreirana');
             $table->timestamps();
+
+            $table->foreign('proizvod_id')->references('id')->on('proizvods')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('narudzbinas');
