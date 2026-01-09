@@ -57,8 +57,11 @@ class ProizvodniProcesController extends Controller
             'napomena' => 'nullable|string|max:500',
         ]);
 
-        // Generiši jedinstveni broj serije
-        $validated['broj_serije'] = 'SER-' . Str::padLeft((ProizvodniProces::max('id') ?? 0) + 1, 3, '0');
+        // Generiši jedinstvene brojeve
+        $nextId = (ProizvodniProces::max('id') ?? 0) + 1;
+
+        $validated['broj_serije'] = 'SER-' . Str::padLeft($nextId, 3, '0');
+        $validated['serijski_broj'] = 'SB-' . Str::upper(Str::random(8));
 
         ProizvodniProces::create($validated);
 

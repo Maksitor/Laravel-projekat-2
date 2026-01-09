@@ -12,6 +12,7 @@ class ProizvodniProces extends Model
     protected $table = 'proizvodni_proces'; // tabela u bazi
 
     protected $fillable = [
+        'serijski_broj',
         'broj_serije',        
         'proizvod_id',
         'vrsta_cokolade_id',
